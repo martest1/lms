@@ -1,0 +1,46 @@
+{% extends 'base.html.twig' %}
+{% block content %}
+    <style type="text/css">
+        table, th, td {
+            border: 1px solid black;
+            border-collapse: collapse;
+        }
+        th, td {
+            padding: 5px;
+            text-align: left;
+        }
+    </style>
+    {% if not calculated %}
+        <div>
+            <form method="POST">
+                <textarea name="lms_text" id="lms_text" rows="10" cols="100">{{ text }}</textarea>
+                <input type="submit">
+            </form>
+        </div>
+    {% else %}
+        <div>
+            <div><span>Your submited text:&nbsp;{{ text }}</span><span><form><input type="submit" value="Submit another text"></form></span></div>
+            <div></div>
+            <table>
+                <tr>
+                    <th>#</th>
+                    <th>Word</th>
+                    <th>Count</th>
+                    <th>Stars</th>
+                </tr>
+                {% for word, count in calculated %}
+                    <tr>
+                        <td>{{ loop.index }}</td>
+                        <td>{{ word }}</td>
+                        <td>{{ count }}</td>
+                        {% if (rating[loop.index0] is defined) %}
+                            <td>{{ rating[loop.index0] }}</td>
+                        {% else %}
+                            <td>{{ default }}</td>
+                        {% endif %}
+                    </tr>
+                {% endfor %}
+            </table>
+        </div>
+    {% endif %}
+{% endblock %}

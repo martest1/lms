@@ -1,0 +1,73 @@
+version: '3'
+services:
+    mysql:
+        image: mariadb:10.5
+        container_name: lms_mysql
+        ports:
+            - "3306:3306"
+        environment:
+            MYSQL_ROOT_PASSWORD: root
+            MYSQL_DATABASE: lms
+            MYSQL_USER: lms
+            MYSQL_PASSWORD: lms
+            TZ: Europe/Warsaw
+        volumes:
+            - ./mysql/conf/:/etc/mysql/conf.d/
+            - ./mysql/dump/:/docker-entrypoint-initdb.d/
+        networks:
+            lms_net:
+                ipv4_address: 192.168.112.101
+
+    php:
+        build: ./php
+        container_name: lms_php
+        expose:
+            - "9000"
+            - "9090"
+        volumes:
+             - ../lms/:/var/www/lms/
+        environment:
+              PHP_XDEBUG_ENABLED: 1
+              PHP_IDE_CONFIG: serverName=lms.local
+              XDEBUG_CONFIG: remote_connect_back=1
+              COMPOSER_MEMORY_LIMIT: -1
+        networks:
+            lms_net:
+                ipv4_address: 192.168.112.102
+
+
+    nginx:
+        image: nginx:1.19
+        container_name: lms_nginx
+        ports:
+            - "80:80"
+        links:
+            - php
+        volumes:
+             - ./nginx/:/etc/nginx/conf.d/
+             - ../lms/:/var/www/lms/
+        networks:
+            lms_net:
+                ipv4_address: 192.168.112.103
+
+    portainer:
+        image: portainer/portainer:latest
+        container_name: lms_portainer
+        ports:
+          - "9088:9000"
+        volumes:
+          - /var/run/docker.sock:/var/run/docker.sock
+          - ./portainer-data:/data
+        networks:
+            lms_net:
+                ipv4_address: 192.168.112.104
+
+networks:
+    lms_net:
+        driver: bridge
+        driver_opts:
+            com.docker.network.enable_ipv6: "false"
+        ipam:
+            driver: default
+            config:
+                - subnet: 192.168.112.0/24
