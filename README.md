@@ -7,7 +7,7 @@ To run this task:
 2. In /docker type docker-compose up.
 3. SSH into the php docker and install dependencies via composer (composer install inside the docker).
 4. Edit the .env file (put the db address and credentials).
-5. Inside the php docker, in /var/run/lms run bin/console doctrine:migrations:migrate to populate the db schema.
+5. Inside the php docker, in /var/www/lms run bin/console doctrine:migrations:migrate to populate the db schema.
 6. Edit your /etc/hosts and add your domain (i.e. 127.0.0.1 lms.local www.lms.local).
 
 Assumptions taken:
